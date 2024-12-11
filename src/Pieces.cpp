@@ -23,8 +23,8 @@ int rollDiceSequence() {
 
 void playMonopoly() {
     // creating a vector listing out all board space names
-    std::vector<std::string> boardSpaceNames = {"GO","MEDITERRANEAN AVENUE","COMMUNITY CHEST","BALTIC AVENUE","INCOME TAX","ORIENTAL AVENUE","CHANCE","VERMONT AVENUE","CONNECTICUT AVENUE","ST. CHARLES PLACE",
-        "ELECTRIC COMPANY","STATES AVENUE","VIRGINIA AVENUE","PENNSYLVANIA RAILROAD","ST. JAMES PLACE","COMMUNITY CHEST","TENNESSEE AVENUE","NEW YORK AVENUE","FREE PARKING","KENTUCKY AVENUE","CHANCE",
+    std::vector<std::string> boardSpaceNames = {"GO","MEDITERRANEAN AVENUE","COMMUNITY CHEST","BALTIC AVENUE","INCOME TAX","READING RAILROAD","ORIENTAL AVENUE","CHANCE","VERMONT AVENUE","CONNECTICUT AVENUE",
+        "JUST VISITING", "ST. CHARLES PLACE","ELECTRIC COMPANY","STATES AVENUE","VIRGINIA AVENUE","PENNSYLVANIA RAILROAD","ST. JAMES PLACE","COMMUNITY CHEST","TENNESSEE AVENUE","NEW YORK AVENUE","FREE PARKING","KENTUCKY AVENUE","CHANCE",
         "INDIANA AVENUE","ILLINOIS AVENUE","B&O RAILROAD","ATLANTIC AVENUE","VENTNOR AVENUE","WATER WORKS","MARVIN GARDENS","GO TO JAIL","PACIFIC AVENUE","NORTH CAROLINA AVENUE","COMMUNITY CHEST",
         "PENNSYLVANIA AVENUE","SHORT LINE RAILROAD","CHANCE","PARK PLACE","LUXURY TAX","BOARDWALK"}; // 1x40 vector storing all board space names 
 
@@ -113,7 +113,7 @@ void playMonopoly() {
             std::cin >> userEntry;  
 
             if (userEntry == "d") {
-                int diceRoll = rollDiceSequence();  
+                diceRoll = rollDiceSequence();  
                 validInput = true;
             } else {
                 std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl;
@@ -137,9 +137,10 @@ void playMonopoly() {
         // Render the game
         window.clear();
         window.draw(boardSprite);
-        for (auto& player : players) {
-            window.draw(player->getSprite());  // Draw player sprites
-        }
+        window.draw(players[0]->getSprite());
+        window.draw(players[1]->getSprite());
+        window.draw(players[2]->getSprite());
+        window.draw(players[3]->getSprite());
         window.display();
     }
 }
