@@ -94,14 +94,14 @@ private:
     std::string playerName;
     int playerMoney;
     int playerIndex;
-    int playerPositionX;
-    int playerPositionY;
     std::string playerProperties;
     sf::Sprite playerSprite;
+    sf::Texture playerTexture;
 public:
-    Player(const std::string& inputName, int playerIndex, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& texture)
-    : playerName(inputName), playerPositionX(inputPositionX), playerPositionY(inputPositionY), playerMoney(inputMoney), playerProperties("") {
-        playerSprite.setTexture(texture);
+    Player(const std::string& inputName, int playerIndex, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture)
+    : playerName(inputName), playerMoney(inputMoney), playerProperties("") {
+        playerTexture = inputTexture;
+        playerSprite.setTexture(playerTexture);
         playerSprite.setPosition(inputPositionX, inputPositionY);
     }
 
@@ -111,10 +111,8 @@ public:
     }
 
     // setters
-    void setPosition(int x, int y) {
-        playerPositionX = x;
-        playerPositionY = y;
-        playerSprite.setPosition(x, y);
+    void setPosition(int inputXcoord, int inputYcoord) {
+        playerSprite.setPosition(inputXcoord, inputYcoord);
     }
     void setTexture(const sf::Texture& texture) {
         playerSprite.setTexture(texture);
@@ -125,12 +123,6 @@ public:
     void setPlayerIndex(int inputIndex) {
         playerIndex = inputIndex;
    }
-    void setPositionX(int inputPositionX) {
-        playerPositionX = inputPositionX;
-    }
-    void setPositionY(int inputPositionY) {
-        playerPositionY = inputPositionY;
-    }
     void setPlayerName(std::string newPlayerName) {
         playerName = newPlayerName;
     }
@@ -148,12 +140,6 @@ public:
     }
     int getPlayerIndex(){
         return playerIndex;
-    }
-    int getPlayerPositionX() {
-        return playerPositionX;
-    }
-    int getPlayerPositionY() {
-        return playerPositionY;
     }
     std::string getPlayerName() {
         return playerName;
