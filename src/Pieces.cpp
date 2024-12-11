@@ -30,10 +30,10 @@ void playMonopoly() {
 
     // creating a 2x40 vector listing out all board space pixel locations (x,y)
     std::vector<std::pair<int, int>> pixelLocations = {
-        {738, 738}, {653, 738}, {590, 738}, {527, 738}, {464, 738}, {401, 738}, {338, 738}, {275, 738}, {212, 738}, {149, 738}, {62, 738},
-        {62, 653}, {62, 590}, {62, 527}, {62, 464}, {62, 401}, {62, 338}, {62, 275}, {62, 212}, {62, 149}, {62, 62},
-        {149, 62}, {212, 62}, {275, 62}, {338, 62}, {401, 62}, {464, 62}, {527, 62}, {590, 62}, {653, 62}, {738, 62},
-        {738, 149}, {738, 212}, {738, 275}, {738, 338}, {738, 401}, {738, 464}, {738, 527}, {738, 590}, {738, 653}};
+    {718, 718}, {633, 718}, {570, 718}, {507, 718}, {444, 718}, {381, 718}, {318, 718}, {255, 718}, {192, 718}, {129, 718}, {42, 718},
+    {42, 633}, {42, 570}, {42, 507}, {42, 444}, {42, 381}, {42, 318}, {42, 255}, {42, 192}, {42, 129}, {42, 42},
+    {129, 42}, {192, 42}, {255, 42}, {318, 42}, {381, 42}, {444, 42}, {507, 42}, {570, 42}, {633, 42}, {718, 42},
+    {718, 129}, {718, 192}, {718, 255}, {718, 318}, {718, 381}, {718, 444}, {718, 507}, {718, 570}, {718, 633}};
 
     // initializing all board spaces
     std::vector<boardSpace> boardSpaces; // initializing a vector to hold all 40 board space objects
@@ -53,12 +53,12 @@ void playMonopoly() {
     "Images/HorseRider.png","Images/Iron.png","Images/Thimble.png","Images/Tophat.png","Images/Wheelbarrow.png"};
 
     // initializing player objects into a vector with a for loop:
-    int startingMoney = 1500; // default starting money for Monopoly
-    int startingIndex = 0; // all players start on GO
-    int startingXposition = boardSpaces[startingIndex].getBoardPositionX(); // extracting the x position of the GO space
-    int startingYposition = boardSpaces[startingIndex].getBoardPositionY(); // extracting the y position of the GO space 
     std::vector<std::unique_ptr<Player>> players; // allocating a vector of smart pointers for the player objects
     for (int i = 0; i < 4; ++i) {
+        int startingMoney = 1500; // default starting money for Monopoly
+        int startingIndex = 0; // all players start on GO
+        int startingXposition = boardSpaces[startingIndex].getBoardPositionX(); // extracting the x position of the GO space
+        int startingYposition = boardSpaces[startingIndex].getBoardPositionY(); // extracting the y position of the GO space 
         std::string playerName; // making a player name variable
         std::cout << "Enter Player " << (i + 1) << "'s name: " << std::endl; // prompting the terminal for the player's name
         std::cin >> playerName; // player name input
@@ -101,8 +101,8 @@ void playMonopoly() {
                 window.close();
         }
 
-        // Game Logic for the current player's turn
-        Player& currentPlayer = *players[currentPlayerIndex];  // Get the current player
+        // game logic for the current player's turn:
+        Player& currentPlayer = *players[currentPlayerIndex];  // get the current player's object from the players vector
 
         std::string userEntry;
         std::cout << currentPlayer.getPlayerName() << "'s turn. Press 'd' to roll the dice." << std::endl;
@@ -120,21 +120,21 @@ void playMonopoly() {
             }
         }
 
-        // Calculate the new position
+        // calculate the new player position based on their index and dice roll
         int newIndex = (currentPlayer.getPlayerIndex() + diceRoll) % 40; // 40 spaces on the board
         currentPlayer.setPosition(boardSpaces[newIndex].getBoardPositionX(), boardSpaces[newIndex].getBoardPositionY());
         currentPlayer.setPlayerIndex(newIndex);
 
-        // Display player movement
+        // alerting the terminal that the player moved
         std::cout << currentPlayer.getPlayerName() << " rolled a total of " << diceRoll << ", so they move to " << boardSpaces[newIndex].getSpaceName() << "." << std::endl;
 
-        // Display player status
+        // displaying the player's status
         std::cout << currentPlayer.getPlayerName() << ": $" << currentPlayer.getPlayerMoney() << " remaining.\n";
 
-        // Check if the player should finish their turn and move to the next player
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();  // Move to the next player
+        // check if the player should finish their turn and move to the next player
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();  // move to the next player
 
-        // Render the game
+        // updating the window
         window.clear();
         window.draw(boardSprite);
         window.draw(players[0]->getSprite());
