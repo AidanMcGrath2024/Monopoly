@@ -30,7 +30,8 @@ int rollDiceSequence() {
     
 }
 
-int main() {
+int main() 
+{
     // creating a vector listing out all board space names
     std::vector<std::string> boardSpaceNames = {"GO","MEDITERRANEAN AVENUE","COMMUNITY CHEST","BALTIC AVENUE","INCOME TAX","ORIENTAL AVENUE","CHANCE","VERMONT AVENUE","CONNECTICUT AVENUE","ST. CHARLES PLACE",
         "ELECTRIC COMPANY","STATES AVENUE","VIRGINIA AVENUE","PENNSYLVANIA RAILROAD","ST. JAMES PLACE","COMMUNITY CHEST","TENNESSEE AVENUE","NEW YORK AVENUE","FREE PARKING","KENTUCKY AVENUE","CHANCE",
@@ -96,8 +97,134 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(boardSize.x, boardSize.y), "Monopoly Game"); // making a window
 
     // Game loop
-    while (window.isOpen()) {
-
+   while (window.isOpen()) 
+   {
+    sf::Event event;
+    while (window.pollEvent(event)) 
+    {
+        if (event.type == sf::Event::Closed)
+            window.close();
     }
-    return 0;
+
+    // Game Logic for each player's turn
+    for (auto& player : players) 
+    {
+        // Roll dice for the current player
+        std::cout << player.getPlayerName() << "'s turn. Press Enter to roll the dice." << std::endl;
+        std::cin.ignore(); // Wait for the player to press Enter
+        int diceRoll = rollDiceSequence();
+
+        // Calculate the new position
+        int newIndex = (player.getPlayerPositionX() + diceRoll) % 40; // 40 spaces on the board
+        player.setPosition(boardSpaces[newIndex].getBoardPositionX(), boardSpaces[newIndex].getBoardPositionY());
+
+        // Display player movement
+        std::cout << player.getPlayerName() << " moves to " << boardSpaces[newIndex].getSpaceName() << "." << std::endl;
+
+        // Handle special spaces
+        const std::string& spaceType = boardSpaces[newIndex].getSpaceType();
+
+        if (spaceType == "Chance") 
+        {
+            // Handle Chance card
+            int chanceOutcome = rand() % 3; // Randomize outcome
+            switch (chanceOutcome) 
+            {
+            case 0:
+                std::cout << "Chance: Advance to GO! Collect $200.\n";
+                player.setPosition(boardSpaces[0].getBoardPositionX(), boardSpaces[0].getBoardPositionY());
+                player.setPlayerMoney(player.getPlayerMoney() + 200);
+                break;
+            case 1:
+                std::cout << "Chance: Pay $50 fine.\n";
+                player.setPlayerMoney(player.getPlayerMoney() - 50);
+                break;
+            case 2:
+                std::cout << "Chance: Move back 3 spaces.\n";
+                newIndex = (newIndex - 3 + 40) % 40; // Move back 3 spaces safely
+                player.setPosition(boardSpaces[newIndex].getBoardPositionX(), boardSpaces[newIndex].getBoardPositionY());
+                break;
+            }
+        } 
+        else if (spaceType == "Community Chest") 
+        {
+            // Handle Community Chest card
+            int chestOutcome = rand() % 3; // Randomize outcome
+            switch (chestOutcome) 
+            {
+            case 0:
+                std::cout << "Community Chest: Bank error in your favor. Collect $100.\n";
+                player.setPlayerMoney(player.getPlayerMoney() + 100);
+                break;
+            case 1:
+                std::cout << "Community Chest: Doctor's fees. Pay $50.\n";
+                player.setPlayerMoney(player.getPlayerMoney() - 50);
+                break;
+            case 2:
+                std::cout << "Community Chest: You inherit $200.\n";
+                player.setPlayerMoney(player.getPlayerMoney() + 200);
+                break;
+            }
+        } 
+        else if (spaceType == "Go to Jail") 
+        {
+            // Handle Go to Jail
+            std::cout << player.getPlayerName() << " is sent directly to Jail! Do not pass GO, do not collect $200.\n";
+            int jailIndex = 30; // Index of Jail space (adjust if needed)
+            player.setPosition(boardSpaces[jailIndex].getBoardPositionX(), boardSpaces[jailIndex].getBoardPositionY());
+            // Optional: Mark player as "in jail"
+        } 
+        else if (spaceType == "Income Tax") 
+        {
+            // Handle Income Tax
+            int taxAmount = std::min(200, player.getPlayerMoney() / 10); // $200 or 10% of money, whichever is less
+            std::cout << player.getPlayerName() << " pays Income Tax: $" << taxAmount << ".\n";
+            player.setPlayerMoney(player.getPlayerMoney() - taxAmount);
+        } 
+        else if (spaceType == "Luxury Tax") 
+        {
+            // Handle Luxury Tax
+            std::cout << player.getPlayerName() << " pays Luxury Tax: $75.\n";
+            player.setPlayerMoney(player.getPlayerMoney() - 75);
+        } 
+        else if (spaceType == "property") 
+        {
+            // Handle property interaction
+            Property* property = dynamic_cast<Property*>(&boardSpaces[newIndex]);
+            if (property && !property->getLandlord().empty() && property->getLandlord() != player.getPlayerName()) 
+            {
+                int rent = property->getRent();
+                player.setPlayerMoney(player.getPlayerMoney() - rent);
+                std::cout << player.getPlayerName() << " pays $" << rent << " in rent to " << property->getLandlord() << "." << std::endl;
+            } 
+            else if (property && property->getLandlord().empty()) 
+            {
+                // Offer the property for purchase
+                std::cout << "Would you like to purchase " << property->getSpaceName() << " for $" << property->getPrice() << "? (y/n): ";
+                char choice;
+                std::cin >> choice;
+                if (choice == 'y' && player.getPlayerMoney() >= property->getPrice()) 
+                {
+                    player.setPlayerMoney(player.getPlayerMoney() - property->getPrice());
+                    property->purchase(player.getPlayerName());
+                } 
+                else 
+                {
+                    std::cout << "Not enough money or declined purchase." << std::endl;
+                }
+            }
+        }
+
+        // Display player status
+        std::cout << player.getPlayerName() << ": $" << player.getPlayerMoney() << " remaining.\n";
+    }
+
+    // Render the game
+    window.clear();
+    window.draw(boardSprite);
+    for (const auto& player : players) 
+    {
+        window.draw(player.getSprite());
+    }
+    window.display();
 }
