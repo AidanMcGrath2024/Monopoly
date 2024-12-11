@@ -61,24 +61,24 @@ int main() {
     std::vector<std::string> playerCharacterFiles = {"Images/Battleship.png","Images/Boot.png","Images/Car.png","Images/Dog.png",
     "Images/HorseRider.png","Images/Iron.png","Images/Thimble.png","Images/Tophat.png","Images/Wheelbarrow.png"};
 
-    // Initializing player objects into a vector with a for loop:
+    // initializing player objects into a vector with a for loop:
     int startingMoney = 1500; // default starting money for Monopoly
     int startingXposition = boardSpaces[0].getBoardPositionX(); // extracting the x position of the GO space
     int startingYposition = boardSpaces[0].getBoardPositionY(); // extracting the y position of the GO space 
-    std::vector<Player> players;
+    std::vector<std::unique_ptr<Player>> players; // allocating a vector of smart pointers for the player objects
     for (int i = 0; i < 4; ++i) {
-        std::string playerName;
-        std::cout << "Enter Player " << (i + 1) << "'s name: " << std::endl;
-        std::cin >> playerName;
-        int playerCharacter;
-        std::cout << "Which character would you like to be? \n Press: 1 for Battleship\n2 for Boot\n3 for Car\n4 Dog\n5 for Horse Rider\n6 for Iron\n7 for Thimble\n8 for Tophat\n9 for Wheelbarrow\n" << std::endl;
-        std::cin >> playerCharacter;
-        sf::Texture playerTexture;
-        if (!playerTexture.loadFromFile(playerCharacterFiles[playerCharacter-1])) {
+        std::string playerName; // making a player name variable
+        std::cout << "Enter Player " << (i + 1) << "'s name: " << std::endl; // prompting the terminal for the player's name
+        std::cin >> playerName; // player name input
+        int playerCharacter; // making a player character indicator
+        std::cout << "Which character would you like to be? \n Press: \n1 for Battleship\n2 for Boot\n3 for Car\n4 Dog\n5 for Horse Rider\n6 for Iron\n7 for Thimble\n8 for Tophat\n9 for Wheelbarrow\n" << std::endl; // a menu for the user to choose their character from
+        std::cin >> playerCharacter; // player character indicator input 
+        sf::Texture playerTexture; // making a player character texture for their chosen board piece
+        if (!playerTexture.loadFromFile(playerCharacterFiles[(playerCharacter-1)])) {
             std::cerr << "Error loading player image!" << std::endl;
             return -1;
         }
-        players.push_back(Player(playerName, startingXposition, startingYposition, startingMoney, playerTexture));
+        players.push_back(std::make_unique<Player>(playerName, startingXposition, startingYposition, startingMoney, playerTexture));
     }
 
     // graphics
@@ -93,8 +93,16 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(boardSize.x, boardSize.y), "Monopoly Game"); // making a window
 
-    int currentPlayerIndex = 0;  // starts with the first player
+    // initial rendering of the window
+    window.clear();
+    window.draw(boardSprite);
+    window.draw(players[0]->getSprite());
+    window.draw(players[1]->getSprite());
+    window.draw(players[2]->getSprite());
+    window.draw(players[3]->getSprite());
+    window.display();
 
+    int currentPlayerIndex = 0;  // starts with the first player
     // game loop
     while (window.isOpen()) {
         sf::Event event;
@@ -104,7 +112,7 @@ int main() {
         }
 
         // Game Logic for the current player's turn
-        Player& currentPlayer = players[currentPlayerIndex];  // Get the current player
+        Player& currentPlayer = *players[currentPlayerIndex];  // Get the current player
 
         std::cout << currentPlayer.getPlayerName() << "'s turn. Press Enter to roll the dice." << std::endl;
         std::cin.ignore();  // Wait for the player to press Enter
@@ -126,7 +134,10 @@ int main() {
         // Render the game
         window.clear();
         window.draw(boardSprite);
-        window.draw(currentPlayer.getSprite());
+        window.draw(players[0]->getSprite());
+        window.draw(players[1]->getSprite());
+        window.draw(players[2]->getSprite());
+        window.draw(players[3]->getSprite());
         window.display();
     }
     return 0;
