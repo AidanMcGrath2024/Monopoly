@@ -23,6 +23,10 @@ cmake ..
 echo "convert this to an executable application -- let's go!!"
 cmake --build . -j 4
 cmake --install .
+
+echo "Copying Images folder to build directory"
+cp -r ${project_root_dir}/Images ${project_root_dir}/build/Images
+
 cd ${project_root_dir}
 echo "declare success -- hooray!"
 
