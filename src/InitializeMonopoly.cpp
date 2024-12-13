@@ -106,6 +106,8 @@ void playMonopoly() {
     window.draw(players[3]->getSprite());
     window.display();
 
+    // check current money of player, if they are broke then they do not engage in their turn
+
     int currentPlayerIndex = 0;  // starts with the first player
     // game loop:
     while (window.isOpen()) {
@@ -121,12 +123,12 @@ void playMonopoly() {
         // if player is in jail: 
         if (currentPlayer.getInJail() == true)
         {
-                // if the player is in jail and has more money than bail
+            // if the player is in jail and has more money than bail:
             if (currentPlayer.getPlayerMoney() > 50){
                 std::cout << currentPlayer.getPlayerName() << " is in jail, you have these options:" << std::endl;
-                // player has a get out of jail free card
+                // player has a get out of jail free card:
                 if (currentPlayer.getGetOutOfJailFree() == true){
-                    // options for player
+                    // options for player:
                     std::cout << "Press:\n" << 1 << ": use your Get Out of Jail Free card to be free \n"
                     << 2 << ": Pay $50 to be free\n" << 3 << ": try to roll doubles to be free" << std::endl;
                     std::string userEntry; // for jail choice
@@ -140,35 +142,35 @@ void playMonopoly() {
                             validInput = true;
                         }
                         else if (userEntry == "2") {
+                            // pay $50:
                             currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 50);
                             std::cout << currentPlayer.getPlayerName() << " paid $50 to get out of jail! They can now continue their turn:" << std::endl;
                             currentPlayer.setInJail(false);
                             validInput = true;
                         }
                         else if (userEntry == "3") {
+                            // rolling for doubles:
                             std::cout << currentPlayer.getPlayerName() << " wants to roll the dice for freedom! Press the 'd' key to roll the dice:" << std::endl;
                             // dice rolling:
                             int diceRoll = 0;
-                            bool validInput = false; // input verification
-                            int die1;
-                            int die2;
-                            while (validInput == false) {  
-                                std::cin >> userEntry;
-
-                                if (userEntry == "d") {
-                                    die1 = rollDice(rand());
-                                    die2 = rollDice(rand());
+                            std::string rollChoice;
+                            bool rollInput = false; // input verification for the roll
+                            while (rollInput == false) {  
+                                std::cin >> rollChoice;
+                                if (rollChoice == "d") {
+                                    int die1 = rollDice(rand());
+                                    int die2 = rollDice(rand());
                                     std::cout << "First die: " << die1 << std::endl;
                                     std::cout << "Second die: " << die2 << std::endl;
-                                    validInput = true;
                                     if (die1 == die2) {
                                         std::cout << "Congratulations you rolled doubles! You are free to continue your turn: " << std::endl;
                                         currentPlayer.setInJail(false);
                                     }
                                     else {
                                         std::cout << "You did not roll doubles! You must stay in jail. Your turn is skipped." << std::endl;
-                                        currentPlayer.setInJail(true);
                                     }
+                                    rollInput = true; // kicks out of the dice roll loop
+                                    validInput = true; // kick out of hte menu choice loop
                                 } 
                                 else {
                                     std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl << std::endl;
@@ -182,7 +184,7 @@ void playMonopoly() {
                 }
                 // if the player is in jail, does not have a get out of jail free card, and has more than bail
                 else if (currentPlayer.getGetOutOfJailFree() == false){
-                    std::cout << "Press:\n" << 1 << ": Pay $50 to be free" << 2 << ": try to roll doubles to be free" << std::endl;
+                    std::cout << "Press:\n" << 1 << ": Pay $50 to be free\n" << 2 << ": try to roll doubles to be free" << std::endl;
                     std::string userEntry; // for jail choice
                     bool validInput = false; // input verification
                     while (validInput == false) {
@@ -196,27 +198,24 @@ void playMonopoly() {
                         else if (userEntry == "2") {
                             std::cout << currentPlayer.getPlayerName() << " wants to roll the dice for freedom! Press the 'd' key to roll the dice:" << std::endl;
                             // dice rolling:
-                            int diceRoll = 0;
-                            bool validInput = false; // input verification
-                            int die1;
-                            int die2;
-                            while (validInput == false) {  
-                                std::cin >> userEntry;
-
-                                if (userEntry == "d") {
-                                    die1 = rollDice(rand());
-                                    die2 = rollDice(rand());
+                            bool rollInput = false; // input verification
+                            std::string rollChoice;
+                            while (rollInput == false) {  
+                                std::cin >> rollChoice;
+                                if (rollChoice == "d") {
+                                    int die1 = rollDice(rand());
+                                    int die2 = rollDice(rand());
                                     std::cout << "First die: " << die1 << std::endl;
                                     std::cout << "Second die: " << die2 << std::endl;
-                                    validInput = true;
                                     if (die1 == die2) {
                                         std::cout << "Congratulations, you rolled doubles! You are free to continue your turn: " << std::endl;
                                         currentPlayer.setInJail(false);
                                     }
                                     else {
                                         std::cout << "You did not roll doubles! You must stay in jail. Your turn is skipped." << std::endl;
-                                        currentPlayer.setInJail(true);
                                     }
+                                    validInput = true;
+                                    rollInput = true;
                                 } 
                                 else {
                                     std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl << std::endl;
@@ -246,27 +245,24 @@ void playMonopoly() {
                     else if (userEntry == "2") {
                         std::cout << currentPlayer.getPlayerName() << " wants to roll the dice for freedom! Press the 'd' key to roll the dice:" << std::endl;
                         // dice rolling:
-                        int diceRoll = 0;
-                        bool validInput = false; // input verification
-                        int die1;
-                        int die2;
-                        while (validInput == false) {  
-                            std::cin >> userEntry;
-
-                            if (userEntry == "d") {
-                                die1 = rollDice(rand());
-                                die2 = rollDice(rand());
+                        bool rollInput = false; // input verification
+                        std::string rollChoice;
+                        while (rollInput == false) {  
+                            std::cin >> rollChoice;
+                            if (rollChoice == "d") {
+                                int die1 = rollDice(rand());
+                                int die2 = rollDice(rand());
                                 std::cout << "First die: " << die1 << std::endl;
                                 std::cout << "Second die: " << die2 << std::endl;
-                                validInput = true;
                                 if (die1 == die2) {
                                     std::cout << "Congratulations, you rolled doubles! You are free to continue your turn: " << std::endl;
                                     currentPlayer.setInJail(false);
                                 }
                                 else {
                                     std::cout << "You did not roll doubles! You must stay in jail. Your turn is skipped." << std::endl;
-                                    currentPlayer.setInJail(true);
                                 }
+                                validInput = true;
+                                rollInput = true;
                             } 
                             else {
                                 std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl << std::endl;
@@ -280,32 +276,26 @@ void playMonopoly() {
             }
             // otherwise, the player's only option is to try to roll doubles
             else {
-                std::string userEntry; // for jail choice
-                bool validInput = false; // input verification
                 std::cout << "Your only option is to attempt to roll doubles!" << std::endl;
                 std::cout << "Press the 'd' key to roll the dice:" << std::endl;
                 // dice rolling:
-                int diceRoll = 0;
+                std::string userEntry; // for jail choice
                 bool rollInput = false; // input verification
-                int die1;
-                int die2;
                 while (rollInput == false) {  
                     std::cin >> userEntry;
-
                     if (userEntry == "d") {
-                        die1 = rollDice(rand());
-                        die2 = rollDice(rand());
+                        int die1 = rollDice(rand());
+                        int die2 = rollDice(rand());
                         std::cout << "First die: " << die1 << std::endl;
                         std::cout << "Second die: " << die2 << std::endl;
-                        rollInput = true;
                         if (die1 == die2) {
                             std::cout << "Congratulations, you rolled doubles! You are free to continue your turn: " << std::endl;
                             currentPlayer.setInJail(false);
                         }
                         else {
                             std::cout << "You did not roll doubles! You must stay in jail. Your turn is skipped." << std::endl;
-                            currentPlayer.setInJail(true);
                         }
+                        rollInput = true;
                     } 
                     else {
                         std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl << std::endl;
