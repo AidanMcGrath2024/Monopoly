@@ -62,11 +62,25 @@ private:
     int price; 
     int rent;
     std::string landlord;
+    int landlordID;
     bool owned;
 public:
     // constructor, initializes all variables
     Property(int inputPrice, int inputRent, bool inputOwned, const std::string& inputName, int inputIndex, const std::string& inputType, int inputBoardPositionX, int inputBoardPositionY)
         : boardSpace(inputName, inputIndex, inputType, inputBoardPositionX, inputBoardPositionY), price(inputPrice), rent(inputRent), owned(inputOwned), landlord("") {}
+
+    // setters
+    void setOwned(bool inputOwned){
+        owned = inputOwned;
+    }
+
+    void setLandlord(std::string inputLandlord){
+        landlord = inputLandlord;
+    }
+
+    void setLandlordID(int inputLandlordID) {
+        landlordID = inputLandlordID;
+    }
 
     // getters
     int getPrice() const {
@@ -76,9 +90,16 @@ public:
         return rent;
     }
 
-    // setter
     std::string getLandlord() const {
         return landlord;
+    }
+
+    int getLandlordID() const {
+        return landlordID;
+    }
+
+    bool getOwned() const {
+        return owned;
     }
 
     // purchase message
@@ -94,12 +115,13 @@ private:
     std::string playerName;
     int playerMoney;
     int playerIndex;
-    std::string playerProperties;
     sf::Sprite playerSprite;
     sf::Texture playerTexture;
+    bool getOutOfJailFree;
+    bool inJail;
 public:
-    Player(const std::string& inputName, int playerIndex, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture)
-    : playerName(inputName), playerMoney(inputMoney), playerProperties("") {
+    Player(const std::string& inputName, int playerIndex, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture, bool inputInJail)
+    : playerName(inputName), playerMoney(inputMoney), inJail(inputInJail) {
         playerTexture = inputTexture;
         playerSprite.setTexture(playerTexture);
         playerSprite.setPosition(inputPositionX, inputPositionY);
@@ -126,9 +148,11 @@ public:
     void setPlayerName(std::string newPlayerName) {
         playerName = newPlayerName;
     }
-    void getPlayerProperties(std::string newPlayerProperty) {
-        // NEED TO IMPLEMENT THE ADDING OF PROPERTY TO A VECTOR
-        playerProperties = newPlayerProperty; //horzcat? 
+    void setGetOutOfJailFree(bool inputGetOutOfJailFree) {
+        getOutOfJailFree = inputGetOutOfJailFree;
+    }
+    void setInJail(bool inputInJail) {
+        inJail = inputInJail;
     }
 
     // getters
@@ -144,8 +168,11 @@ public:
     std::string getPlayerName() {
         return playerName;
     }
-    std::string getPlayerProperties() {
-        return playerProperties;
+    bool getGetOutOfJailFree() {
+        return getOutOfJailFree;
+    }
+    bool getInJail() {
+        return inJail;
     }
 };
 
