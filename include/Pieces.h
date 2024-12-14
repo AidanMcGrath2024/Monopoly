@@ -64,10 +64,12 @@ private:
     std::string landlord;
     int landlordID;
     bool owned;
+    int markerPixelX;
+    int markerPixelY;
 public:
     // constructor, initializes all variables
-    Property(int inputPrice, int inputRent, bool inputOwned, const std::string& inputName, int inputIndex, const std::string& inputType, int inputBoardPositionX, int inputBoardPositionY)
-        : boardSpace(inputName, inputIndex, inputType, inputBoardPositionX, inputBoardPositionY), price(inputPrice), rent(inputRent), owned(inputOwned), landlord("") {}
+    Property(int inputPrice, int inputRent, bool inputOwned, const std::string& inputName, int inputIndex, const std::string& inputType, int inputBoardPositionX, int inputBoardPositionY, int inputMarkerPixelX, int inputMarkerPixelY)
+        : boardSpace(inputName, inputIndex, inputType, inputBoardPositionX, inputBoardPositionY), price(inputPrice), rent(inputRent), owned(inputOwned), landlord(""), markerPixelX(inputMarkerPixelX), markerPixelY(inputMarkerPixelY)  {}
 
     // setters
     void setOwned(bool inputOwned){
@@ -80,6 +82,13 @@ public:
 
     void setLandlordID(int inputLandlordID) {
         landlordID = inputLandlordID;
+    }
+
+    void setPrice(int inputPrice) {
+        price = inputPrice;
+    }
+    void setRent(int inputRent) {
+        rent = inputRent;
     }
 
     // getters
@@ -102,11 +111,14 @@ public:
         return owned;
     }
 
-    // purchase message
-    void purchase(const std::string& inputLandlord) {
-        landlord = inputLandlord;
-        std::cout << landlord << " has purchased " << getSpaceName() << " for $" << price << "!" << std::endl;
+    int getMarkerPixelX() const {
+        return markerPixelX;
     }
+
+    int getMarkerPixelY() const {
+        return markerPixelY;
+    }
+
 };
 
 // player class:
