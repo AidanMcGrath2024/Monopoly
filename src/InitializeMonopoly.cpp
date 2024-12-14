@@ -64,7 +64,7 @@ void playMonopoly() {
             validInput = true;
         }
         else {
-            std::cout << "Wrong key! Please press the 'y' or 'n' key to choose." << std::endl << std::endl;
+            std::cout << "Wrong key! Please press 1-20 to choose." << std::endl << std::endl;
         }
     }
 
@@ -99,6 +99,9 @@ void playMonopoly() {
 
     // initializing player objects into a vector with a for loop:
     std::vector<std::unique_ptr<Player>> players; // allocating a vector of smart pointers for the player objects
+    std::string player1CharacterSelection; // so other player's dont pick player 1's character
+    std::string player2CharacterSelection; // so other player's dont pick player 2's character
+    std::string player3CharacterSelection; // player 4 doesnt pick player 3, 2 or 1's character
     for (int playerIterator = 0; playerIterator < 4; ++playerIterator) {
         int startingMoney = 1500; // default starting money for Monopoly
         int startingIndex = 0; // all players start on GO
@@ -109,13 +112,33 @@ void playMonopoly() {
         std::string playerName; // making a player name variable
         std::cout << "Enter Player " << (playerIterator + 1) << "'s name: " << std::endl; // prompting the terminal for the player's name
         std::cin >> playerName; // player name input
-        int playerCharacter; // making a player character indicator
-        std::cout << "Which character would you like to be? \n Press: \n1 for Battleship\n2 for Boot\n3 for Car\n4 for Dog\n5 for Horse Rider\n6 for Iron\n7 for Thimble\n8 for Tophat\n9 for Wheelbarrow\n" << std::endl; // a menu for the user to choose their character from
-        std::cin >> playerCharacter; // player character indicator input 
+        std::string playerCharacter; // making a player character indicator
         sf::Texture playerTexture; // making a player character texture for their chosen board piece
-        std::cout << "The chosen file is: " << playerCharacterFiles[(playerCharacter-1)] << std::endl;
-        if (!playerTexture.loadFromFile(playerCharacterFiles[(playerCharacter-1)])) {
-            std::cerr << "Error loading player image!" << std::endl;
+        std::cout << "Which character would you like to be? \n Press: \n1 for Battleship\n2 for Boot\n3 for Car\n4 for Dog\n5 for Horse Rider\n6 for Iron\n7 for Thimble\n8 for Tophat\n9 for Wheelbarrow\n" << std::endl; // a menu for the user to choose their character from
+        bool playerCharacterValidInput = false;
+        while (playerCharacterValidInput == false) {
+            std::cin >> playerCharacter;
+            if (playerCharacter != player1CharacterSelection && playerCharacter != player2CharacterSelection && playerCharacter != player3CharacterSelection
+            && (playerCharacter == "1" || playerCharacter == "2" || playerCharacter == "3" || playerCharacter == "4" || playerCharacter == "5" || playerCharacter == "6"
+            || playerCharacter == "7" || playerCharacter == "8" || playerCharacter == "9")) {
+                int playerPick = std::stoi(playerCharacter);
+                if (!playerTexture.loadFromFile(playerCharacterFiles[(playerPick-1)])) {
+                    std::cerr << "Error loading player image!" << std::endl;
+                }
+                playerCharacterValidInput = true;
+            }
+            else {
+                std::cout << "Wrong key or previously chosen character! Please choose another from 1-9." << std::endl << std::endl;
+            }
+        }
+        if (playerIterator == 0) {
+            player1CharacterSelection = playerCharacter;
+        }
+        else if (playerIterator == 1) {
+            player2CharacterSelection = playerCharacter;
+        }
+        else if (playerIterator == 2) {
+            player3CharacterSelection = playerCharacter;
         }
         players.push_back(std::make_unique<Player>(playerName, startingIndex, playerID, startingXposition, startingYposition, startingMoney, playerTexture, jailStatus));
     }
