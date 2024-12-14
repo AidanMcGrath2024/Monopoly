@@ -74,6 +74,9 @@ public:
     // setters
     void setOwned(bool inputOwned){
         owned = inputOwned;
+        if (inputOwned == false) {
+            std::cout << "Player " << (landlordID+1) << "'s property " << getSpaceName() << " is now available for ownership!" << std::endl;
+        }
     }
 
     void setLandlord(std::string inputLandlord){
@@ -121,19 +124,48 @@ public:
 
 };
 
+// Property Marker class:
+class PropertyMarker {
+private:
+    int propertyMarkerPlayerID;
+    sf::Sprite propertyMarkerSprite;
+    sf::Texture propertyMarkerTexture;
+public:
+    PropertyMarker(int inputPropertyMarkerPlayerID, const sf::Texture& inputPropertyMarkerTexture, int inputPropertymarkerPositionX, int inputPropertymarkerPositionY)
+    : propertyMarkerPlayerID(inputPropertyMarkerPlayerID) {
+        propertyMarkerTexture = inputPropertyMarkerTexture;
+        propertyMarkerSprite.setTexture(propertyMarkerTexture);
+        propertyMarkerSprite.setPosition(inputPropertymarkerPositionX, inputPropertymarkerPositionY);
+    }
+
+    // destructor
+    ~PropertyMarker() {
+        std::cout << "Player" << (propertyMarkerPlayerID+1) << "'s property marker destroyed!.\n";
+    }
+
+    // getters
+    sf::Sprite getPropertyMarkerSprite() {
+        return propertyMarkerSprite;
+    }
+    int getPropertyMarkerPlayerID(){
+        return propertyMarkerPlayerID;
+    }
+};
+
 // player class:
 class Player {
 private:
     std::string playerName;
     int playerMoney;
     int playerIndex;
+    int playerID;
     sf::Sprite playerSprite;
     sf::Texture playerTexture;
     bool getOutOfJailFree;
     bool inJail;
 public:
-    Player(const std::string& inputName, int playerIndex, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture, bool inputInJail)
-    : playerName(inputName), playerMoney(inputMoney), inJail(inputInJail) {
+    Player(const std::string& inputName, int inputPlayerIndex, int inputPlayerID, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture, bool inputInJail)
+    : playerName(inputName), playerIndex(inputPlayerIndex), playerID(inputPlayerID), playerMoney(inputMoney), inJail(inputInJail) {
         playerTexture = inputTexture;
         playerSprite.setTexture(playerTexture);
         playerSprite.setPosition(inputPositionX, inputPositionY);
@@ -156,7 +188,10 @@ public:
     }
     void setPlayerIndex(int inputIndex) {
         playerIndex = inputIndex;
-   }
+    }
+    void setPlayerID(int inputID) {
+        playerID = inputID;
+    }
     void setPlayerName(std::string newPlayerName) {
         playerName = newPlayerName;
     }
@@ -176,6 +211,9 @@ public:
     }
     int getPlayerIndex(){
         return playerIndex;
+    }
+    int getPlayerID(){
+        return playerID;
     }
     std::string getPlayerName() {
         return playerName;
