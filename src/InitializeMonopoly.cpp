@@ -28,35 +28,68 @@ void playMonopoly() {
         "INDIANA AVENUE","ILLINOIS AVENUE","B&O RAILROAD","ATLANTIC AVENUE","VENTNOR AVENUE","WATER WORKS","MARVIN GARDENS","GO TO JAIL","PACIFIC AVENUE","NORTH CAROLINA AVENUE","COMMUNITY CHEST",
         "PENNSYLVANIA AVENUE","SHORT LINE RAILROAD","CHANCE","PARK PLACE","LUXURY TAX","BOARDWALK"}; // 1x40 vector storing all board space names 
 
-    // creating a 2x40 vector listing out all board space pixel locations (x,y)
-    std::vector<std::pair<int, int>> pixelLocations = {
+    // creating a 2x40 vector listing out all board space pixel locations (x,y) for the player icons
+    std::vector<std::pair<int, int>> playerPixelLocations = {
     {718, 718}, {633, 718}, {570, 718}, {507, 718}, {444, 718}, {381, 718}, {318, 718}, {255, 718}, {192, 718}, {129, 718}, {42, 718},
     {42, 633}, {42, 570}, {42, 507}, {42, 444}, {42, 381}, {42, 318}, {42, 255}, {42, 192}, {42, 129}, {42, 42},
     {129, 42}, {192, 42}, {255, 42}, {318, 42}, {381, 42}, {444, 42}, {507, 42}, {570, 42}, {633, 42}, {718, 42},
     {718, 129}, {718, 192}, {718, 255}, {718, 318}, {718, 381}, {718, 444}, {718, 507}, {718, 570}, {718, 633}, {66, 704}};
 
+    // creating a 2x40 vector listing out all board space pixel locations (x,y) for the player property markers
+    std::vector<std::pair<int, int>> markerPixelLocations = {
+    {729, 776}, {643, 683}, {580, 683}, {517, 683}, {454, 683}, {391, 683},{328, 683}, {265, 683}, {202, 683}, {139, 683}, {53, 776},
+    {95, 643}, {95, 580}, {95, 517}, {95, 454}, {95, 391}, {95, 328}, {95, 265}, {95, 202}, {95, 139}, {53, 100},
+    {140, 95}, {203, 95}, {266, 95}, {329, 95}, {392, 95}, {455, 95}, {518, 95}, {581, 95}, {644, 95}, {729, 100},
+    {684, 139}, {684, 202}, {684, 265}, {684, 328}, {684, 391}, {684, 454}, {684, 517}, {684, 580}, {684, 643}, {77, 762}};
+
+    // creating a 1x40 vector listing our all board space rents
+    std::vector<int> spaceRents = {
+    0, 15, 0, 15, 0, 25, 15, 0, 15, 15, 0, 15, 15, 15, 15, 25, 15, 0, 15, 15, 0, 15, 0, 15, 15, 25, 15, 15, 15, 35, 0, 15, 15, 0, 42, 25, 0, 50, 0, 100 };
+
     // initializing all board spaces
     std::vector<std::unique_ptr<boardSpace>> boardSpaces; // initializing a vector of pointers to hold all 40 board space objects to support polymorphism
     boardSpaces.clear();  // clearing the vector and destroys all boardSpace objects
 
+    // before starting: asking the user for how fast they would like the game to be
+    int gameSpeed;
+    std::string gameSpeedInput;
+    std::cout << "How fast would you like the game to be?\nInput an integer from 1 to 20, with 1 being the slowest game and 10 being very fast: \n (a reference - a game speed of 16 ends in about 2 cycles of the board)" << std::endl;
+    bool validInput = false;
+    while (validInput == false) {
+        std::cin >> gameSpeedInput;
+        if (gameSpeedInput == "1" || gameSpeedInput == "2" || gameSpeedInput == "3" || gameSpeedInput == "4" || gameSpeedInput == "5" || gameSpeedInput == "6" || gameSpeedInput == "7" || gameSpeedInput == "8" || gameSpeedInput == "9" || gameSpeedInput == "10"
+        || gameSpeedInput == "11" || gameSpeedInput == "12" || gameSpeedInput == "13" || gameSpeedInput == "14" || gameSpeedInput == "15" || gameSpeedInput == "16" || gameSpeedInput == "17" || gameSpeedInput == "18" || gameSpeedInput == "19" || gameSpeedInput == "20") {
+            std::cout << "You've decided to have a game speed of " << gameSpeedInput << "!" << std::endl << std::endl;
+            gameSpeed = std::stoi(gameSpeedInput);
+            validInput = true;
+        }
+        else {
+            std::cout << "Wrong key! Please press the 'y' or 'n' key to choose." << std::endl << std::endl;
+        }
+    }
+
     for (int i = 0; i < 41; ++i) { // loop to create the 40 board spaces + the JAIL square
     std::string name = boardSpaceNames[i]; 
-    int inputXPixel = pixelLocations[i].first;
-    int inputYPixel = pixelLocations[i].second;
+    int inputXPixel = playerPixelLocations[i].first;
+    int inputYPixel = playerPixelLocations[i].second;
+    int markerInputXPixel = markerPixelLocations[i].first;
+    int markerInputYPixel = markerPixelLocations[i].second;
     // if statement structure to assign proper space type
     std::string type = "";
+        // if a special space:
         if (name == "GO" || name == "COMMUNITY CHEST" || name == "CHANCE" || name == "INCOME TAX" || name == "LUXURY TAX" || 
             name == "FREE PARKING" || name == "JUST VISITING" || name == "GO TO JAIL" || name == "JAIL") {
             type = name; // Special board spaces are of their namesake type
             // creating a boardSpace object and pushing it into the boardSpaces vector:
-            boardSpaces.push_back(std::make_unique<boardSpace>(name, i, type, inputXPixel, inputYPixel));
+            boardSpaces.push_back(std::make_unique<boardSpace>(name, i, type, inputXPixel, inputYPixel)); // pushing the board space into the boardSpaces vector
+        // if a property:
         } else {
-            type = "PROPERTY"; // otherwise, its a property type
+            type = "PROPERTY";
             // add the property to the boardSpaces vector:
-            int price = 100;
-            int rent = 50;
-            bool owned = false;
-            boardSpaces.push_back(std::make_unique<Property>(price, rent, owned, name, i, type, inputXPixel, inputYPixel));
+            int rent = gameSpeed*spaceRents[i]; // rent is the ith element in the spaceRents vector, times the game speed
+            int price = 2*rent; // each property's price is set to 2 times the rent
+            bool owned = false; // no one owns the property 
+            boardSpaces.push_back(std::make_unique<Property>(price, rent, owned, name, i, type, inputXPixel, inputYPixel, markerInputXPixel, markerInputYPixel)); // pushing the property into the boardSpaces vector
         }
     }
 
@@ -66,7 +99,7 @@ void playMonopoly() {
 
     // initializing player objects into a vector with a for loop:
     std::vector<std::unique_ptr<Player>> players; // allocating a vector of smart pointers for the player objects
-    players.clear();      // clearing the vector and destroys all Player objects
+    players.clear(); // clearing the vector and destroys all Player objects
     for (int i = 0; i < 4; ++i) {
         int startingMoney = 1500; // default starting money for Monopoly
         int startingIndex = 0; // all players start on GO
@@ -86,7 +119,29 @@ void playMonopoly() {
         }
         players.push_back(std::make_unique<Player>(playerName, startingIndex, startingXposition, startingYposition, startingMoney, playerTexture, jailStatus));
     }
+
+
     // graphics
+
+    // creating each player marker texture
+    sf::Texture player1MarkerTexture, player2MarkerTexture, player3MarkerTexture, player4MarkerTexture;
+    if (!player1MarkerTexture.loadFromFile("Images/Player1Marker.png")) { // loading Player1Marker.png
+        std::cerr << "Error loading board image!" << std::endl; // error message if the board image doesn't load
+    }
+    if (!player2MarkerTexture.loadFromFile("Images/Player2Marker.png")) { // loading Player2Marker.png
+        std::cerr << "Error loading board image!" << std::endl; // error message if the board image doesn't load
+    }
+    if (!player3MarkerTexture.loadFromFile("Images/Player3Marker.png")) { // loading Player3Marker.png
+        std::cerr << "Error loading board image!" << std::endl; // error message if the board image doesn't load
+    }
+    if (!player4MarkerTexture.loadFromFile("Images/Player4Marker.png")) { // loading Player4Marker.png
+        std::cerr << "Error loading board image!" << std::endl; // error message if the board image doesn't load
+    }
+
+    // creating a vector to store all player property markers
+    std::vector<sf::Sprite> playerPropertyMarkers;
+
+    // generating the board for the window
     sf::Texture boardTexture; // creating a texture for the board
     if (!boardTexture.loadFromFile("Images/Monopoly_Board.png")) { // loading the board
         std::cerr << "Error loading board image!" << std::endl; // error message if the board image doesn't load
@@ -108,6 +163,7 @@ void playMonopoly() {
 
     // check current money of player, if they are broke then they do not engage in their turn
 
+    int turnCounter = 0;
     int currentPlayerIndex = 0;  // starts with the first player
     // game loop:
     while (window.isOpen()) {
@@ -115,6 +171,51 @@ void playMonopoly() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+        }
+
+        // accelerating game play over board cycles, favoring property owners
+        if (turnCounter > 16 && turnCounter < 18) { // four cycles
+            for (int allSpaces = 0; allSpaces < 40; allSpaces++){
+                if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
+                    Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
+                    if (propertySpace) { // ensures the pointer points to a property space
+                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter/4)); // multiplying price by 4
+                        propertySpace->setRent(propertySpace->getRent()*(turnCounter/2)); // multiplying rent by 2
+                    }
+                }
+            }
+            std::cout << "--------------------------------------------------------" << std::endl;
+            std::cout << "This game is taking a little long, property rents are doubled, and property prices are quadrupled!" << std::endl;
+            std::cout << "--------------------------------------------------------" << std::endl;
+        }
+        else if (turnCounter > 24 && turnCounter < 26) { // 6 cycles
+            for (int allSpaces = 0; allSpaces < 40; allSpaces++){
+                if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
+                    Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
+                    if (propertySpace) { // ensures the pointer points to a property space
+                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter/4)); // multiplying price by 6
+                        propertySpace->setRent(propertySpace->getRent()*(turnCounter)); // multiplying rent by 24
+                    }
+                }
+            }
+            std::cout << "--------------------------------------------------------" << std::endl;
+            std::cout << "This game is getting long now, property rents are multiplied by 6, and property prices are multiplied by 24!" << std::endl;
+            std::cout << "--------------------------------------------------------" << std::endl;
+        }
+        // if the game isn't over by now, I would fall asleep
+        else if (turnCounter > 80 && turnCounter < 82) { // 20 cycles
+            for (int allSpaces = 0; allSpaces < 40; allSpaces++){
+                if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
+                    Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
+                    if (propertySpace) { // ensures the pointer points to a property space
+                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter)); // multiplying price by 36
+                        propertySpace->setRent(propertySpace->getRent()*(turnCounter*2)); // multiplying rent by 72
+                    }
+                }
+            }
+            std::cout << "--------------------------------------------------------" << std::endl;
+            std::cout << "Alright, time to touch grass now! Property rents are multiplied by 36, and property prices are multiplied by 72!" << std::endl;
+            std::cout << "--------------------------------------------------------" << std::endl;
         }
 
         // game logic for the current player's turn:
@@ -344,6 +445,9 @@ void playMonopoly() {
             window.draw(players[1]->getSprite());
             window.draw(players[2]->getSprite());
             window.draw(players[3]->getSprite());
+            for (int markerIterator = 0; markerIterator < size(playerPropertyMarkers); markerIterator++) {
+                window.draw(playerPropertyMarkers[markerIterator]);
+            }
             window.display();
 
             // player options based on space they landed on
@@ -351,8 +455,21 @@ void playMonopoly() {
             // if player landed on a property:
             if (boardSpaces[newIndex]->getSpaceType() == "PROPERTY") {
                 Property* propertySpace = dynamic_cast<Property*>(boardSpaces[newIndex].get()); // cast to boardSpaces vector to see if the board space is a property, then make that boardSpaces instance a pointer to the property object
+                // if the property is already owned:
+                if (propertySpace->getOwned() == true) {
+                    // alerting the terminal the current player was charged:
+                    std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
+                    " which is owned by " << propertySpace->getLandlord() << ", you must pay their rent of $" << propertySpace->getRent() << "!" << std::endl << std::endl;
+                    // subtracting the rent of the property from the player's wallet:
+                    currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney()-propertySpace->getRent());
+                    // adding the rent charge of the property to the owner's wallet:
+                    players[propertySpace->getLandlordID()]->setPlayerMoney(players[propertySpace->getLandlordID()]->getPlayerMoney() + propertySpace->getRent());
+                    // alerting the terminal the current player was charged:
+                    std::cout << propertySpace->getLandlord() << " collected $" << propertySpace->getRent() << ", raising their wallet to " <<
+                    players[propertySpace->getLandlordID()]->getPlayerMoney() << "!" << std::endl << std::endl;
+                }
                 // if the property is unowned and the player can afford it:
-                if (propertySpace->getOwned() == false && currentPlayer.getPlayerMoney() >= propertySpace->getPrice()) {
+                else if (propertySpace->getOwned() == false && currentPlayer.getPlayerMoney() >= propertySpace->getPrice()) {
                     std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
                     " which has a price of $" << propertySpace->getPrice() << ", and is able to afford it - would you like to purchase it?\nPress:\ny for YES\nn for NO" << std::endl << std::endl;
                     bool validInput = false;
@@ -360,12 +477,34 @@ void playMonopoly() {
                         std::cin >> userEntry;
                         if (userEntry == "y") {
                             std::cout << "You've decided to purchase " << boardSpaces[newIndex]->getSpaceName() << "!" << std::endl << std::endl;
+                            // manipulating player a property variables:
                             propertySpace->setOwned(true); // property is now set to owned
                             propertySpace->setLandlordID(currentPlayerIndex); // setting the property owner's ID to the current player
                             propertySpace->setLandlord(currentPlayer.getPlayerName()); // setting the property owner's landlord name to the current player's name
                             currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney()-propertySpace->getPrice()); // subtracting the price of the property from the player's wallet
+                            // saving a player marker sprite to be drawn on the board, based on the current player's turn:
+                            sf::Sprite playerMarker;
+                            if (currentPlayerIndex == 0){
+                                playerMarker.setTexture(player1MarkerTexture); // setting the marker to the proper texture
+                                playerMarker.setPosition(propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY()); // set on the property's marker pixel location
+                                playerPropertyMarkers.push_back(playerMarker); // adding the sprite to the playerPropertyMarkers sprite vector
+                            }
+                            else if (currentPlayerIndex == 1){
+                                playerMarker.setTexture(player2MarkerTexture); // setting the marker to the proper texture
+                                playerMarker.setPosition(propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY()); // set on the property's marker pixel location
+                                playerPropertyMarkers.push_back(playerMarker); // adding the sprite to the playerPropertyMarkers sprite vector
+                            }
+                            else if (currentPlayerIndex == 2){
+                                playerMarker.setTexture(player3MarkerTexture); // setting the marker to the proper texture
+                                playerMarker.setPosition(propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY()); // set on the property's marker pixel location
+                                playerPropertyMarkers.push_back(playerMarker); // adding the sprite to the playerPropertyMarkers sprite vector
+                            }
+                            else if (currentPlayerIndex == 3){
+                                playerMarker.setTexture(player4MarkerTexture); // setting the marker to the proper texture
+                                playerMarker.setPosition(propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY()); // set on the property's marker pixel location
+                                playerPropertyMarkers.push_back(playerMarker); // adding the sprite to the playerPropertyMarkers sprite vector
+                            }
                             validInput = true; // input was valid
-                            // ** ADD MARKER ON BOARD **
                         }
                         else if (userEntry == "n") {
                             std::cout << "You've decided not to purchase " << boardSpaces[newIndex]->getSpaceName() << "!" << std::endl << std::endl;
@@ -381,19 +520,6 @@ void playMonopoly() {
                     // alerting the terminal the current player cannot afford the property:
                     std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
                     " which has a price of $" << propertySpace->getPrice() << " which " << currentPlayer.getPlayerName() << " cannot afford!" << std::endl << std::endl;
-                }
-                // if the property is already owned:
-                else if (propertySpace->getOwned() == true) {
-                    // alerting the terminal the current player was charged:
-                    std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
-                    " which is owned by " << propertySpace->getLandlord() << ", you must pay their rent of $" << propertySpace->getRent() << "!" << std::endl << std::endl;
-                    // subtracting the rent of the property from the player's wallet:
-                    currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney()-propertySpace->getRent());
-                    // adding the rent charge of the property to the owner's wallet:
-                    players[propertySpace->getLandlordID()]->setPlayerMoney(players[propertySpace->getLandlordID()]->getPlayerMoney() + propertySpace->getRent());
-                    // alerting the terminal the current player was charged:
-                    std::cout << propertySpace->getLandlord() << " collected $" << propertySpace->getRent() << ", raising their wallet to " <<
-                    players[propertySpace->getLandlordID()]->getPlayerMoney() << "!" << std::endl << std::endl;
                 }
             }
 
@@ -490,6 +616,7 @@ void playMonopoly() {
 
             // check if the player should finish their turn and move to the next player
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();  // move to the next player
+            turnCounter = turnCounter + 1; // add to the turn counter
         }
 
         // player is in jail, turn is skipped!
@@ -504,6 +631,7 @@ void playMonopoly() {
 
             // check if the player should finish their turn and move to the next player
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();  // move to the next player
+            turnCounter = turnCounter + 1; // add to the turn counter
         }
     }
 }
