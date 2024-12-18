@@ -1,8 +1,6 @@
 #include "Pieces.h"
 
 // functions:
-
- // dice rolling functions:
 int rollDice(int dif) {
     int min = 1, max = 6;
     std::mt19937 gen(time(0) + dif);
@@ -12,24 +10,32 @@ int rollDice(int dif) {
 }
 
 int rollDiceSequence() {
+    int die1 = rollDice(rand());
+    return die1;
+}
 
+// overloading rollDiceSequence function for rolling two dice
+int rollDiceSequence(bool rollTwoDice) {
     int die1 = rollDice(rand());
     int die2 = rollDice(rand());
     int roll = die1 + die2;
     std::cout << "Die 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll << "\n";
     return roll;
-    
 }
 
 void playMonopoly() {
-    // creating a vector listing out all board space names
-    std::vector<std::string> boardSpaceNames = {"GO","MEDITERRANEAN AVENUE","COMMUNITY CHEST","BALTIC AVENUE","INCOME TAX","READING RAILROAD","ORIENTAL AVENUE","CHANCE","VERMONT AVENUE","CONNECTICUT AVENUE",
-        "JUST VISITING", "ST. CHARLES PLACE","ELECTRIC COMPANY","STATES AVENUE","VIRGINIA AVENUE","PENNSYLVANIA RAILROAD","ST. JAMES PLACE","COMMUNITY CHEST","TENNESSEE AVENUE","NEW YORK AVENUE","FREE PARKING","KENTUCKY AVENUE","CHANCE",
-        "INDIANA AVENUE","ILLINOIS AVENUE","B&O RAILROAD","ATLANTIC AVENUE","VENTNOR AVENUE","WATER WORKS","MARVIN GARDENS","GO TO JAIL","PACIFIC AVENUE","NORTH CAROLINA AVENUE","COMMUNITY CHEST",
-        "PENNSYLVANIA AVENUE","SHORT LINE RAILROAD","CHANCE","PARK PLACE","LUXURY TAX","BOARDWALK"}; // 1x40 vector storing all board space names 
+    // creating an array listing out all board space names
+    const std::string boardSpaceNames[40] = {
+    "GO", "MEDITERRANEAN AVENUE", "COMMUNITY CHEST", "BALTIC AVENUE", "INCOME TAX", "READING RAILROAD", 
+    "ORIENTAL AVENUE", "CHANCE", "VERMONT AVENUE", "CONNECTICUT AVENUE", "JUST VISITING", "ST. CHARLES PLACE", 
+    "ELECTRIC COMPANY", "STATES AVENUE", "VIRGINIA AVENUE", "PENNSYLVANIA RAILROAD", "ST. JAMES PLACE", 
+    "COMMUNITY CHEST", "TENNESSEE AVENUE", "NEW YORK AVENUE", "FREE PARKING", "KENTUCKY AVENUE", "CHANCE", 
+    "INDIANA AVENUE", "ILLINOIS AVENUE", "B&O RAILROAD", "ATLANTIC AVENUE", "VENTNOR AVENUE", "WATER WORKS", 
+    "MARVIN GARDENS", "GO TO JAIL", "PACIFIC AVENUE", "NORTH CAROLINA AVENUE", "COMMUNITY CHEST", 
+    "PENNSYLVANIA AVENUE", "SHORT LINE RAILROAD", "CHANCE", "PARK PLACE", "LUXURY TAX", "BOARDWALK"};
 
-    // creating a 2x40 vector listing out all board space pixel locations (x,y) for the player icons
-    std::vector<std::pair<int, int>> playerPixelLocations = {
+    // creating a 2x40 deque listing out all board space pixel locations (x,y) for the player icons
+    std::deque<std::pair<int, int>> playerPixelLocations = {
     {718, 718}, {633, 718}, {570, 718}, {507, 718}, {444, 718}, {381, 718}, {318, 718}, {255, 718}, {192, 718}, {129, 718}, {42, 718},
     {42, 633}, {42, 570}, {42, 507}, {42, 444}, {42, 381}, {42, 318}, {42, 255}, {42, 192}, {42, 129}, {42, 42},
     {129, 42}, {192, 42}, {255, 42}, {318, 42}, {381, 42}, {444, 42}, {507, 42}, {570, 42}, {633, 42}, {718, 42},
@@ -200,8 +206,8 @@ void playMonopoly() {
                 if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
                     Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
                     if (propertySpace) { // ensures the pointer points to a property space
-                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter/4)); // multiplying price by 4
-                        propertySpace->setRent(propertySpace->getRent()*(turnCounter/2)); // multiplying rent by 2
+                        *propertySpace = (propertySpace->getPrice()*2); // multiplying price by 4, using the overloaded = operator
+                        *propertySpace+(propertySpace->getRent()*4); // multiplying rent by 2, using the overloaded + operator
                     }
                 }
             }
@@ -214,13 +220,13 @@ void playMonopoly() {
                 if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
                     Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
                     if (propertySpace) { // ensures the pointer points to a property space
-                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter/4)); // multiplying price by 6
-                        propertySpace->setRent(propertySpace->getRent()*(turnCounter)); // multiplying rent by 24
+                        *propertySpace = (propertySpace->getPrice()*2); // multiplying price by 4, using the overloaded = operator
+                        *propertySpace+(propertySpace->getRent()*4); // multiplying rent by 2, using the overloaded + operator
                     }
                 }
             }
             std::cout << "--------------------------------------------------------" << std::endl;
-            std::cout << "This game is getting long now, property rents are multiplied by 6, and property prices are multiplied by 24!" << std::endl;
+            std::cout << "This game is getting long now, property rents are doubled and property prices are quadrupled again!" << std::endl;
             std::cout << "--------------------------------------------------------" << std::endl;
         }
         // if the game isn't over by now, I would fall asleep
@@ -229,13 +235,13 @@ void playMonopoly() {
                 if (boardSpaces[allSpaces]) { // ensures the board space is a valid pointer
                     Property* propertySpace = dynamic_cast<Property*>(boardSpaces[allSpaces].get());
                     if (propertySpace) { // ensures the pointer points to a property space
-                        propertySpace->setPrice(propertySpace->getPrice()*(turnCounter)); // multiplying price by 36
-                        propertySpace->setRent(propertySpace->getRent()*(turnCounter*2)); // multiplying rent by 72
+                        *propertySpace = (propertySpace->getPrice()*8); // multiplying price by 36, using the overloaded = operator
+                        *propertySpace+(propertySpace->getRent()*16); // multiplying rent by 72, using the overloaded + operator
                     }
                 }
             }
             std::cout << "--------------------------------------------------------" << std::endl;
-            std::cout << "Alright, time to touch grass now! Property rents are multiplied by 36, and property prices are multiplied by 72!" << std::endl;
+            std::cout << "Alright, time to touch grass now! Property rents are multiplied by 8, and property prices are multiplied by 16!" << std::endl;
             std::cout << "--------------------------------------------------------" << std::endl;
         }
 
@@ -265,7 +271,7 @@ void playMonopoly() {
                         }
                         else if (userEntry == "2") {
                             // pay $50:
-                            currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 50);
+                            currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 50); // using the overloaded operator + to subtract $50 from their playerMoney object
                             std::cout << currentPlayer.getPlayerName() << " paid $50 to get out of jail! They can now continue their turn:" << std::endl;
                             currentPlayer.setInJail(false);
                             validInput = true;
@@ -280,8 +286,8 @@ void playMonopoly() {
                             while (rollInput == false) {  
                                 std::cin >> rollChoice;
                                 if (rollChoice == "d") {
-                                    int die1 = rollDice(rand());
-                                    int die2 = rollDice(rand());
+                                    int die1 = rollDiceSequence(); // using the roll dice sequence for just one die
+                                    int die2 = rollDiceSequence(); // using the roll dice sequence for just one die
                                     std::cout << "First die: " << die1 << std::endl;
                                     std::cout << "Second die: " << die2 << std::endl;
                                     if (die1 == die2) {
@@ -312,7 +318,7 @@ void playMonopoly() {
                     while (validInput == false) {
                         std::cin >> userEntry;  
                         if (userEntry == "1") {
-                            currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 50);
+                            currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 50); // using the overloaded operator + to subtract $50 from their playerMoney object
                             std::cout << currentPlayer.getPlayerName() << " paid $50 to get out of jail! They can now continue their turn:" << std::endl;
                             currentPlayer.setInJail(false);
                             validInput = true;
@@ -325,8 +331,8 @@ void playMonopoly() {
                             while (rollInput == false) {  
                                 std::cin >> rollChoice;
                                 if (rollChoice == "d") {
-                                    int die1 = rollDice(rand());
-                                    int die2 = rollDice(rand());
+                                    int die1 = rollDiceSequence(); // using the roll dice sequence for just one die
+                                    int die2 = rollDiceSequence(); // using the roll dice sequence for just one die
                                     std::cout << "First die: " << die1 << std::endl;
                                     std::cout << "Second die: " << die2 << std::endl;
                                     if (die1 == die2) {
@@ -372,8 +378,8 @@ void playMonopoly() {
                         while (rollInput == false) {  
                             std::cin >> rollChoice;
                             if (rollChoice == "d") {
-                                int die1 = rollDice(rand());
-                                int die2 = rollDice(rand());
+                                int die1 = rollDiceSequence(); // using the roll dice sequence for just one die
+                                int die2 = rollDiceSequence(); // using the roll dice sequence for just one die
                                 std::cout << "First die: " << die1 << std::endl;
                                 std::cout << "Second die: " << die2 << std::endl;
                                 if (die1 == die2) {
@@ -406,8 +412,8 @@ void playMonopoly() {
                 while (rollInput == false) {  
                     std::cin >> userEntry;
                     if (userEntry == "d") {
-                        int die1 = rollDice(rand());
-                        int die2 = rollDice(rand());
+                        int die1 = rollDiceSequence(); // using the roll dice sequence for just one die
+                        int die2 = rollDiceSequence(); // using the roll dice sequence for just one die
                         std::cout << "First die: " << die1 << std::endl;
                         std::cout << "Second die: " << die2 << std::endl;
                         if (die1 == die2) {
@@ -438,7 +444,9 @@ void playMonopoly() {
                 std::cin >> userEntry;
 
                 if (userEntry == "d") {
-                    diceRoll = rollDiceSequence();
+                    // overloaded function rollDiceSequence accepts boolean input true to indicate two dice should be rolled
+                    bool twoDiceRolled = true;
+                    diceRoll = rollDiceSequence(twoDiceRolled);
                     validInput = true;
                 } else {
                     std::cout << "Wrong key! Please press the 'd' key to roll the dice." << std::endl << std::endl;
@@ -448,7 +456,7 @@ void playMonopoly() {
             // if player is on or passing GO: (must be handled before player's index is manipulated)
             if ((currentPlayer.getPlayerIndex() + diceRoll) > 40){
                 std::cout << currentPlayer.getPlayerName() << " passed GO, they collect $200!" << std::endl << std::endl;
-                currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() + 200);
+                currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() + 200); // using the overloaded operator + to add $200 to their playerMoney object
             }
 
             // calculate the new player position based on their index and dice roll
@@ -458,7 +466,8 @@ void playMonopoly() {
             Property* propertySpace = dynamic_cast<Property*>(boardSpaces[newIndex].get()); // cast to boardSpaces vector to see if the board space is a property, then make that boardSpaces instance a pointer to the property object
 
             // alerting the terminal that the player moved
-            std::cout << currentPlayer.getPlayerName() << " rolled a total of " << diceRoll << ", so they move to " << boardSpaces[newIndex]->getSpaceName() << "." << std::endl << std::endl;
+            std::cout << currentPlayer.getPlayerName() << " rolled a total of " << diceRoll << ", so they move to ";
+            boardSpaces[newIndex]->landedOnSpace();
 
             // updating the window
             window.clear();
@@ -479,15 +488,14 @@ void playMonopoly() {
                 if (propertySpace->getOwned() == true) {
                     // ... and the player already owns it
                     if (propertySpace->getLandlord() == currentPlayer.getPlayerName()){
-                        std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() << " which they already own, nothing happens!" << std::endl << std::endl;
+                        std::cout << currentPlayer.getPlayerName() << " already owns " << *boardSpaces[newIndex] << ", nothing happens!" << std::endl << std::endl;
                     }
                     // otherwise, the player does not own it and is charged rent
                     else {
                     // alerting the terminal the current player was charged:
-                    std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
-                    " which is owned by " << propertySpace->getLandlord() << ", you must pay their rent of $" << propertySpace->getRent() << "!" << std::endl << std::endl;
+                    std::cout <<  *boardSpaces[newIndex] << " is owned by " << propertySpace->getLandlord() << ", you must pay their rent of $" << propertySpace->getRent() << "!" << std::endl << std::endl;
                     // subtracting the rent of the property from the player's wallet:
-                    currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney()-propertySpace->getRent());
+                    currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney()-propertySpace->getRent()); // using the overloaded operator + to subtract rent from their playerMoney object
                     // adding the rent charge of the property to the owner's wallet:
                     players[propertySpace->getLandlordID()]->setPlayerMoney(players[propertySpace->getLandlordID()]->getPlayerMoney() + propertySpace->getRent());
                     // alerting the terminal the current player was charged:
@@ -497,13 +505,12 @@ void playMonopoly() {
                 }
                 // if the property is unowned and the player can afford it:
                 else if (propertySpace->getOwned() == false && currentPlayer.getPlayerMoney() >= propertySpace->getPrice()) {
-                    std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
-                    " which has a price of $" << propertySpace->getPrice() << ", and is able to afford it - would you like to purchase it?\nPress:\ny for YES\nn for NO" << std::endl << std::endl;
+                    std::cout << *boardSpaces[newIndex] << " has a price of $" << propertySpace->getPrice() << ", and is able to afford it - would you like to purchase it?\nPress:\ny for YES\nn for NO" << std::endl << std::endl;
                     bool validInput = false;
                     while (validInput == false) {  
                         std::cin >> userEntry;
                         if (userEntry == "y") {
-                            std::cout << "You've decided to purchase " << boardSpaces[newIndex]->getSpaceName() << "!" << std::endl << std::endl;
+                            propertySpace->propertyPurchased(); //
                             // manipulating player a property variables:
                             propertySpace->setOwned(true); // property is now set to owned
                             propertySpace->setLandlordID(currentPlayerIndex); // setting the property owner's ID to the current player
@@ -512,21 +519,30 @@ void playMonopoly() {
                             // saving a player marker sprite to be drawn on the board, based on the current player's ID:
                             sf::Sprite playerMarker;
                             if (currentPlayer.getPlayerID() == 0){
-                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), player1MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY()));
+                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), currentPlayer.getPlayerName(), player1MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY(), propertySpace->getPrice(),
+                                propertySpace->getRent(),propertySpace->getOwned(),boardSpaces[newIndex]->getSpaceName(),boardSpaces[newIndex]->getSpaceIndex(),boardSpaces[newIndex]->getSpaceType(),boardSpaces[newIndex]->getBoardPositionX(),
+                                boardSpaces[newIndex]->getBoardPositionY(),propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY())); // long-winded declaration of a new Player Property Marker
                             }
                             else if (currentPlayer.getPlayerID() == 1){
-                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), player2MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY()));
+                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), currentPlayer.getPlayerName(), player2MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY(), propertySpace->getPrice(),
+                                propertySpace->getRent(),propertySpace->getOwned(),boardSpaces[newIndex]->getSpaceName(),boardSpaces[newIndex]->getSpaceIndex(),boardSpaces[newIndex]->getSpaceType(),boardSpaces[newIndex]->getBoardPositionX(),
+                                boardSpaces[newIndex]->getBoardPositionY(),propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY())); // long-winded declaration of a new Player Property Marker
                             }
                             else if (currentPlayer.getPlayerID() == 2){
-                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), player3MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY()));
+                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), currentPlayer.getPlayerName(), player3MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY(), propertySpace->getPrice(),
+                                propertySpace->getRent(),propertySpace->getOwned(),boardSpaces[newIndex]->getSpaceName(),boardSpaces[newIndex]->getSpaceIndex(),boardSpaces[newIndex]->getSpaceType(),boardSpaces[newIndex]->getBoardPositionX(),
+                                boardSpaces[newIndex]->getBoardPositionY(),propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY())); // long-winded declaration of a new Player Property Marker
                             }
                             else if (currentPlayer.getPlayerID() == 3){
-                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), player4MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY()));
+                                playerPropertyMarkers.push_back(std::make_unique<PropertyMarker>(currentPlayer.getPlayerID(), currentPlayer.getPlayerName(), player4MarkerTexture, propertySpace->getMarkerPixelX(), propertySpace->getMarkerPixelY(), propertySpace->getPrice(),
+                                propertySpace->getRent(),propertySpace->getOwned(),boardSpaces[newIndex]->getSpaceName(),boardSpaces[newIndex]->getSpaceIndex(),boardSpaces[newIndex]->getSpaceType(),boardSpaces[newIndex]->getBoardPositionX(),
+                                boardSpaces[newIndex]->getBoardPositionY(),propertySpace->getMarkerPixelX(),propertySpace->getMarkerPixelY())); // long-winded declaration of a new Player Property Marker
                             }
+                            playerPropertyMarkers.back()->propertyPurchased();
                             validInput = true; // input was valid
                         }
                         else if (userEntry == "n") {
-                            std::cout << "You've decided not to purchase " << boardSpaces[newIndex]->getSpaceName() << "!" << std::endl << std::endl;
+                            std::cout << "You've decided not to purchase " << *boardSpaces[newIndex] << "!" << std::endl << std::endl;
                             validInput = true; // input was valid
                         }
                         else {
@@ -537,8 +553,7 @@ void playMonopoly() {
                 // if the player cannot afford the property:
                 else if (propertySpace->getPrice() > currentPlayer.getPlayerMoney()) {
                     // alerting the terminal the current player cannot afford the property:
-                    std::cout << currentPlayer.getPlayerName() << " has landed on the property " << boardSpaces[newIndex]->getSpaceName() <<
-                    " which has a price of $" << propertySpace->getPrice() << " which " << currentPlayer.getPlayerName() << " cannot afford!" << std::endl << std::endl;
+                    std::cout << *boardSpaces[newIndex] << " has a price of $" << propertySpace->getPrice() << " which " << currentPlayer.getPlayerName() << " cannot afford!" << std::endl << std::endl;
                 }
             }
 
@@ -567,7 +582,7 @@ void playMonopoly() {
             }
             // if player landed on Community Chest:
             if (boardSpaces[newIndex]->getSpaceType() == "COMMUNITY CHEST") {
-                std::cout << currentPlayer.getPlayerName() << " landed on " << boardSpaces[newIndex]->getSpaceName() << ", they receive a random monetary value of -150 to 150..." << std::endl << std::endl;
+                std::cout << currentPlayer.getPlayerName() << " landed on " << *boardSpaces[newIndex] << ", they receive a random monetary value of -150 to 150..." << std::endl << std::endl;
                 int min = -150, max = 150;
                 std::mt19937 gen(time(0));
                 std::uniform_int_distribution<> distrib(min, max);
@@ -578,7 +593,7 @@ void playMonopoly() {
 
             // if player landed on Go To Jail:
             if (boardSpaces[newIndex]->getSpaceType() == "GO TO JAIL") {
-                std::cout << "Oh no! " << currentPlayer.getPlayerName() << " landed on " << boardSpaces[newIndex]->getSpaceName() << "!" << std::endl;
+                std::cout << "Oh no! " << currentPlayer.getPlayerName() << " landed on " << *boardSpaces[newIndex] << "!" << std::endl;
                 if (currentPlayer.getGetOutOfJailFree() == true){
                     std::cout << currentPlayer.getPlayerName() << " has a Get Out of Jail Free Card! Would you like to use it?\nPress:\ny for YES\nn for NO" << std::endl;
                     bool validInput = false;
@@ -612,19 +627,19 @@ void playMonopoly() {
 
             // if player landed on a tax card:
             if (boardSpaces[newIndex]->getSpaceType() == "LUXURY TAX" || boardSpaces[newIndex]->getSpaceType() == "INCOME TAX") {
-                std::cout << currentPlayer.getPlayerName() << " landed on " << boardSpaces[newIndex]->getSpaceName() << " - meaning $200 is deducted from their wallet!" << std::endl << std::endl;
+                std::cout << currentPlayer.getPlayerName() << " landed on " << *boardSpaces[newIndex] << " - meaning $200 is deducted from their wallet!" << std::endl << std::endl;
                 currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() - 200);
             }
 
             // if player landed on GO:
             if (boardSpaces[newIndex]->getSpaceType() == "GO") {
-                std::cout << currentPlayer.getPlayerName() << " landed on " << boardSpaces[newIndex]->getSpaceName() << ", they collect $200!" << std::endl << std::endl;
+                std::cout << currentPlayer.getPlayerName() << " landed on " << *boardSpaces[newIndex] << ", they collect $200!" << std::endl << std::endl;
                 currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() + 200);
             }
 
             // if player landed on Free Parking:
             if (boardSpaces[newIndex]->getSpaceType() == "FREE PARKING" || boardSpaces[newIndex]->getSpaceType() == "JUST VISITING" ) {
-                std::cout << currentPlayer.getPlayerName() << " landed on " << boardSpaces[newIndex]->getSpaceName() << ", nothing happens!" << std::endl << std::endl;
+                std::cout << currentPlayer.getPlayerName() << " landed on " << *boardSpaces[newIndex] << ", nothing happens!" << std::endl << std::endl;
             }
             // displaying the player's status
             std::cout << currentPlayer.getPlayerName() << ": $" << currentPlayer.getPlayerMoney() << " remaining.\n\n\n";
@@ -636,6 +651,7 @@ void playMonopoly() {
                 std::cout << "--------------------------------------------------------" << std::endl;
                 for (int propertyMarkerIterator = 0; propertyMarkerIterator < playerPropertyMarkers.size(); propertyMarkerIterator++) {
                     if (currentPlayer.getPlayerID() == playerPropertyMarkers[propertyMarkerIterator]->getPropertyMarkerPlayerID()){ // if the player owned properties
+                        playerPropertyMarkers[propertyMarkerIterator]->propertyOpened(); // alerting the terminal the player marker has been removed from the property space
                         playerPropertyMarkers.erase(playerPropertyMarkers.begin() + propertyMarkerIterator); // removing the player's property marker icons
                     }
                 }
@@ -645,6 +661,7 @@ void playMonopoly() {
                         if (propertySpace) { // ensures the pointer points to a property space
                             if (currentPlayer.getPlayerID() == propertySpace->getLandlordID()){
                                 propertySpace->setOwned(false); // setting the property space to unowned, now that the player is no longer playing
+                                propertySpace->propertyOpened(); // alerting the terminal the property is now available for ownership
                                 propertySpace->setLandlord(""); // setting the landlord to be no one
                                 propertySpace->setLandlordID(-1); // setting the landlord ID to be no one
                             }
