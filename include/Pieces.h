@@ -24,6 +24,11 @@ public:
 
     virtual ~boardSpace() {} // destructor
 
+    // default print statement for any board space
+    virtual void landedOnSpace(){ 
+        std::cout << getSpaceName() << " which is a " << getSpaceType() << " type space." << std::endl;
+    }
+
     // setters
     void setSpaceIndex(int inputIndex) {
         spaceIndex = inputIndex;
@@ -45,7 +50,7 @@ public:
     std::string getSpaceType() {
         return spaceType;
     }
-    std::string getSpaceName() {
+    std::string getSpaceName() const {
         return spaceName;
     }
     int getBoardPositionX() {
@@ -53,6 +58,12 @@ public:
     }
     int getBoardPositionY() {
         return boardPositionY;
+    }
+
+    // overloading the operator << to output the name of the board space when called in the main code
+    friend std::ostream& operator<<(std::ostream& os, const boardSpace& space) {
+        os << space.getSpaceName(); // outputs the space's name
+        return os;
     }
 };
 
@@ -71,27 +82,56 @@ public:
     Property(int inputPrice, int inputRent, bool inputOwned, const std::string& inputName, int inputIndex, const std::string& inputType, int inputBoardPositionX, int inputBoardPositionY, int inputMarkerPixelX, int inputMarkerPixelY)
         : boardSpace(inputName, inputIndex, inputType, inputBoardPositionX, inputBoardPositionY), price(inputPrice), rent(inputRent), owned(inputOwned), landlord(""), markerPixelX(inputMarkerPixelX), markerPixelY(inputMarkerPixelY)  {}
 
-    // setters
-    void setOwned(bool inputOwned){
-        owned = inputOwned;
-        if (inputOwned == false) {
-            std::cout << "Player " << (landlordID+1) << "'s property " << getSpaceName() << " is now available for ownership!" << std::endl;
+    // specific print statement for property space
+    virtual void landedOnSpace() override {
+        if (getOwned() == true){
+            std::cout << getSpaceName() << " which is a " << getSpaceType() << " type space." << std::endl;
+            std::cout << "Property " << getSpaceName() << " is owned!" << std::endl;
+        }
+        else {
+            std::cout << getSpaceName() << " which is a " << getSpaceType() << " type space." << std::endl;
+            std::cout << "Property " << getSpaceName() << " is unowned!" << std::endl;
         }
     }
 
+    // print statement when a property is purchased
+    virtual void propertyPurchased(){
+        std::cout << "You've decided to purchase " << getSpaceName() << "!" << std::endl;
+    }
+
+    // print statement when a property is reopened
+    virtual void propertyOpened() {
+        std::cout << "Player " << (landlordID+1) << "'s property " << getSpaceName() << " is now available for ownership!" << std::endl;
+    }
+
+    // setters
+    void setOwned(bool inputOwned){
+        owned = inputOwned;
+    }
     void setLandlord(std::string inputLandlord){
         landlord = inputLandlord;
     }
-
     void setLandlordID(int inputLandlordID) {
         landlordID = inputLandlordID;
     }
-
     void setPrice(int inputPrice) {
         price = inputPrice;
     }
+
+    // overloading the assignment operator (=) for price setting
+    Property& operator=(int newPrice) {
+        setPrice(newPrice);  // calling the setter function
+        return *this;
+    }
+
     void setRent(int inputRent) {
         rent = inputRent;
+    }
+    
+    // overloading the assignment operator (+) for rent setting
+    Property& operator+(int newRent) {
+        setRent(newRent);  // calling the setter function
+        return *this;
     }
 
     // getters
@@ -101,23 +141,18 @@ public:
     int getRent() const {
         return rent;
     }
-
     std::string getLandlord() const {
         return landlord;
     }
-
     int getLandlordID() const {
         return landlordID;
     }
-
     bool getOwned() const {
         return owned;
     }
-
     int getMarkerPixelX() const {
         return markerPixelX;
     }
-
     int getMarkerPixelY() const {
         return markerPixelY;
     }
@@ -125,27 +160,45 @@ public:
 };
 
 // Property Marker class:
-class PropertyMarker {
+class PropertyMarker : public Property {
 private:
     int propertyMarkerPlayerID;
+    std::string propertyMarkerPlayerName;
     sf::Sprite propertyMarkerSprite;
     sf::Texture propertyMarkerTexture;
 public:
-    PropertyMarker(int inputPropertyMarkerPlayerID, const sf::Texture& inputPropertyMarkerTexture, int inputPropertymarkerPositionX, int inputPropertymarkerPositionY)
-    : propertyMarkerPlayerID(inputPropertyMarkerPlayerID) {
+    // constructor for PropertyMarker, associating it with a Property
+    PropertyMarker(int inputPropertyMarkerPlayerID, std::string inputPropertyMarkerPlayerName, const sf::Texture& inputPropertyMarkerTexture, int inputPropertymarkerPositionX, int inputPropertymarkerPositionY,
+                   int inputPrice, int inputRent, bool inputOwned, const std::string& inputName, int inputIndex, const std::string& inputType, 
+                   int inputBoardPositionX, int inputBoardPositionY, int inputMarkerPixelX, int inputMarkerPixelY)
+        : Property(inputPrice, inputRent, inputOwned, inputName, inputIndex, inputType, inputBoardPositionX, inputBoardPositionY, inputMarkerPixelX, inputMarkerPixelY), 
+          propertyMarkerPlayerName(inputPropertyMarkerPlayerName) {
+        
+        propertyMarkerPlayerID = inputPropertyMarkerPlayerID;
         propertyMarkerTexture = inputPropertyMarkerTexture;
         propertyMarkerSprite.setTexture(propertyMarkerTexture);
         propertyMarkerSprite.setPosition(inputPropertymarkerPositionX, inputPropertymarkerPositionY);
     }
 
     // destructor
-    ~PropertyMarker() {
-        std::cout << "Player" << (propertyMarkerPlayerID+1) << "'s property marker destroyed!.\n";
+    ~PropertyMarker() {}
+
+    // specific print statement for the property marker
+    virtual void propertyPurchased() override {
+        std::cout << "Property marker placed on " << getSpaceName() << " for " << propertyMarkerPlayerName << "!" << std::endl;
+    }
+
+    // print statement when a property is reopened
+    virtual void propertyOpened() override {
+        std::cout << "Property marker removed on " << getSpaceName() << " for " << propertyMarkerPlayerName << "!" << std::endl;
     }
 
     // getters
     sf::Sprite getPropertyMarkerSprite() {
         return propertyMarkerSprite;
+    }
+    std::string getPropertyMarkerPlayerName(){
+        return propertyMarkerPlayerName;
     }
     int getPropertyMarkerPlayerID(){
         return propertyMarkerPlayerID;
@@ -156,7 +209,7 @@ public:
 class Player {
 private:
     std::string playerName;
-    int playerMoney;
+    signed long playerMoney;
     int playerIndex;
     int playerID;
     sf::Sprite playerSprite;
@@ -164,6 +217,7 @@ private:
     bool getOutOfJailFree;
     bool inJail;
 public:
+    // constructor: initializes all objects
     Player(const std::string& inputName, int inputPlayerIndex, int inputPlayerID, int inputPositionX, int inputPositionY, int inputMoney, const sf::Texture& inputTexture, bool inputInJail)
     : playerName(inputName), playerIndex(inputPlayerIndex), playerID(inputPlayerID), playerMoney(inputMoney), inJail(inputInJail) {
         playerTexture = inputTexture;
@@ -171,7 +225,7 @@ public:
         playerSprite.setPosition(inputPositionX, inputPositionY);
     }
 
-    // destructor
+    // destructor: destroys the class' instatiation
     ~Player() {
         std::cout << "Player " << playerName << " is no longer playing.\n";
     }
@@ -183,7 +237,7 @@ public:
     void setTexture(const sf::Texture& texture) {
         playerSprite.setTexture(texture);
     }
-    void setPlayerMoney(int newMoney) {
+    void setPlayerMoney(signed long newMoney) {
         playerMoney = newMoney;
     }
     void setPlayerIndex(int inputIndex) {
